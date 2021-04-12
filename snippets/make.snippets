@@ -1,0 +1,48 @@
+# base
+snippet base
+	.PHONY: clean
+	CC = gcc
+	CFLAGS = -g -Wall
+
+	all: $1
+
+	%.o: %.c
+		$(CC) $(CFLAGS) -c -o $@ $<
+	
+	${1:out}: $1.o
+		$(CC) $(CFLAGS) -o $@ $+
+
+	clean:
+		rm -f *.o core.*
+
+# add
+snippet add
+	${1:out}: $1.o
+		$(CC) $(CFLAGS) -o $@ $+
+# print
+snippet print
+	print-%: ; @echo $*=$($*)
+# ifeq
+snippet if
+	ifeq (${1:cond0}, ${2:cond1})
+		${3:#statements}
+	endif
+# ifeq ... else ... endif
+snippet ife
+	ifeq (${1:cond0}, ${2:cond1})
+		${3:#statements}
+	else
+		${4}
+	endif
+# else ...
+snippet el
+	else
+		${1:#statements}
+# .DEFAULT_GOAL := target
+snippet default
+	.DEFAULT_GOAL := ${1}
+# help target for self-documented Makefile
+snippet help
+	help: ## Prints help for targets with comments
+		@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $\$1, $\$2}'
+	${3}
